@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+    <h1>Home</h1>
+
+    <div class="card">
+
+        <h3 id="welcome">Loading...</h3>
+
+        <br>
+
+        <a href="learning.html">
+            <button>Learning</button>
+        </a>
+
+        <a href="test.html">
+            <button>Quiz</button>
+        </a>
+
+        <a href="feedback.html">
+            <button>Feedback</button>
+        </a>
+
+        <br><br>
+
+        <button onclick="logout()">Logout</button>
+
+    </div>
+
+<script>
+
+/* Firebase Config */
+const firebaseConfig = {
+  apiKey: "AIzaSyC7DBA3XUEkFbbtxVrhg6yvD8IKjWqUzQc",
+  authDomain: "computing-feedback-chat.firebaseapp.com",
+  databaseURL: "https://computing-feedback-chat-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "computing-feedback-chat",
+  storageBucket: "computing-feedback-chat.firebasestorage.app",
+  messagingSenderId: "873968911336",
+  appId: "1:873968911336:web:489ac7214624a5412fda5d",
+  measurementId: "G-H4DW9K62VQ"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+const db = firebase.database();
+
+/* Login Protection + Welcome Message */
+firebase.auth().onAuthStateChanged(user => {
+
+    if(!user){
+        window.location = "index.html";
+        return;
+    }
+
+    db.ref("users/" + user.uid).once("value")
+    .then(snap => {
+
+        let data = snap.val();
+
+        /* Use database username if available */
+        if(data && data.username){
+
+            document.getElementById("welcome").textContent =
+                "Welcome, " + data.username + "!";
+
+        }
+        else{
+
+            /* Fallback to email username */
+            let fallback = user.email
+                .replace("@app.com", "")
+                .replace(/\./g, " ");
+
+            document.getElementById("welcome").textContent =
+                "Welcome, " + fallback + "!";
+        }
+
+    })
+    .catch(() => {
+
+        document.getElementById("welcome").textContent =
+            "Welcome!";
+    });
+
+});
+
+/* Logout */
+function logout(){
+
+    firebase.auth().signOut()
+    .then(() => {
+        window.location = "index.html";
+    })
+    .catch(err => {
+        alert("Logout failed: " + err.message);
+    });
+
+}
+
+</script>
+
+</body>
+</html>

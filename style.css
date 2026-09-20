@@ -1,0 +1,305 @@
+/* =========================
+   GENERAL
+========================= */
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f8ff;
+    margin: 20px;
+}
+
+h1 {
+    color: #2c3e50;
+}
+
+h3 {
+    color: #34495e;
+}
+
+/* =========================
+   CARD
+========================= */
+
+.card {
+    background: white;
+    border: 2px solid #3498db;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 700px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* =========================
+   INPUTS
+========================= */
+
+input {
+    width: 80%;
+    max-width: 300px;
+    padding: 10px;
+    font-size: 16px;
+
+    border: 1px solid #999;
+    border-radius: 8px;
+}
+
+/* =========================
+   ERROR BOX
+========================= */
+
+.errorBox {
+    display: none;
+
+    color: #c0392b;
+    background-color: #fdecea;
+
+    border: 1px solid #e74c3c;
+
+    padding: 10px;
+    margin-bottom: 10px;
+
+    border-radius: 8px;
+}
+
+/* =========================
+   HOME PAGE
+========================= */
+
+#welcome {
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+/* =========================
+   CHAT TEXTBOX
+========================= */
+
+.bigBox {
+    width: 100%;
+    height: 120px;
+
+    padding: 10px;
+
+    box-sizing: border-box;
+
+    font-size: 18px;
+
+    border: 1px solid #999;
+    border-radius: 10px;
+
+    resize: vertical;
+
+    margin-bottom: 10px;
+}
+
+.bigBox::placeholder {
+    font-size: 16px;
+}
+
+/* =========================
+   CHAT AREA
+========================= */
+
+#chatBox {
+    margin-top: 15px;
+
+    max-height: 350px;
+
+    overflow-y: auto;
+
+    border: 2px solid #3498db;
+    border-radius: 10px;
+
+    padding: 10px;
+
+    background: #fafafa;
+}
+
+/* =========================
+   CHAT MESSAGES
+========================= */
+
+.message {
+    padding: 10px;
+    margin: 8px 0;
+
+    border-radius: 10px;
+
+    max-width: 70%;
+
+    word-wrap: break-word;
+}
+
+/* Your messages */
+
+.my {
+    background-color: #d4f8d4;
+    margin-left: auto;
+    text-align: left;
+}
+
+/* Other messages */
+
+.other {
+    background-color: #eaf6ff;
+    margin-right: auto;
+    text-align: left;
+}
+
+/* =========================
+   QUIZ
+========================= */
+
+.question {
+    margin-bottom: 20px;
+}
+
+.question p {
+    font-weight: bold;
+}
+
+/* =========================
+   POPUP
+========================= */
+
+.popup {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0,0,0,0.5);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition: 0.3s;
+}
+
+.popup.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.popupContent {
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 12px;
+
+    min-width: 250px;
+
+    transform: scale(0.8);
+
+    transition: 0.3s;
+}
+
+.popup.show .popupContent {
+    transform: scale(1);
+}
+
+/* =========================
+   LINKS
+========================= */
+
+a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 600px) {
+
+    .card {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    .message {
+        max-width: 90%;
+    }
+
+    input {
+        width: 95%;
+    }
+
+}
+
+/* Learning Sections */
+
+.sectionBtn {
+    width: 100%;
+    text-align: left;
+    font-size: 18px;
+}
+
+.sectionContent {
+    max-height: 0;
+    overflow: hidden;
+
+    transition: max-height 0.3s ease;
+
+    text-align: center;
+}
+
+/* Spacing between points */
+.sectionContent li {
+    margin:15px 0;
+    line-height: 1.6;
+}
+
+.sectionContent.open {
+    max-height: 500px;
+}
+
+.arrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.arrow.rotate {
+    transform: rotate(90deg);
+}
+
+.sectionContent ol {
+display: inline-block;
+text-align: left;
+margin: 20px auto;
+}

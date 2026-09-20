@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+
+<h1>Quiz</h1>
+
+<p id="score">Score: 0</p>
+
+<div class="card" id="quizBox"></div>
+
+<!-- Result Popup -->
+<div id="popup" class="popup">
+    <div class="popupContent">
+
+        <h2 id="resultText"></h2>
+
+        <button onclick="closePopup()">Done</button>
+        <button onclick="retry()">Retry</button>
+
+    </div>
+</div>
+
+<a href="home.html">
+    <button>Back</button>
+</a>
+
+<script>
+
+/* Firebase Config */
+const firebaseConfig = {
+  apiKey: "AIzaSyC7DBA3XUEkFbbtxVrhg6yvD8IKjWqUzQc",
+  authDomain: "computing-feedback-chat.firebaseapp.com",
+  projectId: "computing-feedback-chat",
+  storageBucket: "computing-feedback-chat.firebasestorage.app",
+  messagingSenderId: "873968911336",
+  appId: "1:873968911336:web:489ac7214624a5412fda5d",
+  measurementId: "G-H4DW9K62VQ"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+/* Login Protection */
+firebase.auth().onAuthStateChanged(user => {
+
+    if(user){
+        loadQuiz();
+    }
+    else{
+        window.location = "index.html";
+    }
+
+});
+
+/* Variables */
+let score = 0;
+let answered = 0;
+
+/* Questions */
+let questions = [
+
+{
+q:"Which HTML tag creates the biggest heading?",
+a:[
+{text:"<h1>",c:true},
+{text:"<p>",c:false},
+{text:"<div>",c:false}
+]
+},
+
+{
+q:"What does print() do?",
+a:[
+{text:"Displays output",c:true},
+{text:"Deletes text",c:false},
+{text:"Creates a loop",c:false}
+]
+},
+
+{
+q:"Which tag creates a hyperlink?",
+a:[
+{text:"<a>",c:true},
+{text:"<img>",c:false},
+{text:"<table>",c:false}
+]
+},
+
+{
+q:"What does input() do in Python?",
+a:[
+{text:"Gets user input",c:true},
+{text:"Displays text",c:false},
+{text:"Ends program",c:false}
+]
+},
+
+{
+q:"Which of these is a loop?",
+a:[
+{text:"for",c:true},
+{text:"if",c:false},
+{text:"print",c:false}
+]
+},
+
+{
+q:"Which tag displays an image?",
+a:[
+{text:"<img>",c:true},
+{text:"<a>",c:false},
+{text:"<br>",c:false}
+]
+},
+
+{
+q:"Python is mainly used for?",
+a:[
+{text:"Programming",c:true},
+{text:"Watching videos",c:false},
+{text:"Browsing websites only",c:false}
+]
+},
+
+{
+q:"What does an if statement do?",
+a:[
+{text:"Makes decisions",c:true},
+{text:"Repeats code forever",c:false},
+{text:"Prints text",c:false}
+]
+},
+
+{
+q:"What does == mean?",
+a:[
+{text:"Compare values",c:true},
+{text:"Assign value",c:false},
+{text:"Create loop",c:false}
+]
+},
+
+{
+q:"Why is indentation important in Python?",
+a:[
+{text:"Organises code structure",c:true},
+{text:"Changes colour",c:false},
+{text:"Makes programs faster",c:false}
+]
+}
+
+];
+
+/* Shuffle Answers */
+function shuffle(arr){
+    return arr.sort(() => Math.random() - 0.5);
+}
+
+/* Load Quiz */
+function loadQuiz(){
+
+    let box = document.getElementById("quizBox");
+
+    box.innerHTML = "";
+
+    questions.forEach((q,i)=>{
+
+        let div = document.createElement("div");
+        div.className = "question";
+
+        let questionText = document.createElement("p");
+        questionText.textContent =
+            (i + 1) + ". " + q.q;
+
+        div.appendChild(questionText);
+
+        shuffle([...q.a]).forEach(ans => {
+
+            let btn = document.createElement("button");
+
+            btn.textContent = ans.text;
+
+            btn.onclick = function(){
+
+                if(div.classList.contains("done")){
+                    return;
+                }
+
+                div.classList.add("done");
+
+                answered++;
+
+                let buttons =
+                    div.querySelectorAll("button");
+
+                let correct =
+                    q.a.find(x => x.c).text;
+
+                buttons.forEach(b => {
+
+                    b.disabled = true;
+
+                    if(b === btn){
+
+                        if(ans.c){
+
+                            b.style.background =
+                                "#2ecc71";
+
+                            score++;
+
+                        }
+                        else{
+
+                            b.style.background =
+                                "#e74c3c";
+
+                        }
+
+                    }
+                    else if(
+                        b.textContent === correct
+                    ){
+                        b.style.background =
+                            "#2ecc71";
+                    }
+                    else{
+                        b.style.opacity = "0.4";
+                    }
+
+                });
+
+                document.getElementById("score")
+                .textContent =
+                "Score: " + score;
+
+                if(answered >= questions.length){
+                    showResult();
+                }
+
+            };
+
+            div.appendChild(btn);
+
+        });
+
+        box.appendChild(div);
+
+    });
+
+}
+
+/* Result Popup */
+function showResult(){
+
+    let message = "";
+
+    if(score === questions.length){
+
+        message =
+        "🎉 Perfect! " +
+        score +
+        "/" +
+        questions.length;
+
+    }
+    else if(score >= 5){
+
+        message =
+        "👍 Good Job! " +
+        score +
+        "/" +
+        questions.length;
+
+    }
+    else{
+
+        message =
+        "📘 Keep Practising! " +
+        score +
+        "/" +
+        questions.length;
+
+    }
+
+    document.getElementById("resultText")
+    .textContent = message;
+
+    document.getElementById("popup")
+    .classList.add("show");
+
+}
+
+/* Close Popup */
+function closePopup(){
+
+    document.getElementById("popup")
+    .classList.remove("show");
+
+}
+
+/* Retry Quiz */
+function retry(){
+
+    location.reload();
+
+}
+
+</script>
+
+</body>
+</html>

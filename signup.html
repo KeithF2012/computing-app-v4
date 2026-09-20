@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+    <h1>Sign Up</h1>
+
+    <div class="card">
+
+        <p id="errorBox" class="errorBox"></p>
+
+        <input id="username" type="text" placeholder="Username">
+        <br><br>
+
+        <input id="password" type="password" placeholder="Password">
+        <br><br>
+
+        <button onclick="signup()">Create Account</button>
+
+        <p>
+            Already have an account?
+            <a href="index.html">Login</a>
+        </p>
+
+    </div>
+
+<script>
+
+/* Firebase Config */
+const firebaseConfig = {
+  apiKey: "AIzaSyC7DBA3XUEkFbbtxVrhg6yvD8IKjWqUzQc",
+  authDomain: "computing-feedback-chat.firebaseapp.com",
+  databaseURL: "https://computing-feedback-chat-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "computing-feedback-chat",
+  storageBucket: "computing-feedback-chat.firebasestorage.app",
+  messagingSenderId: "873968911336",
+  appId: "1:873968911336:web:489ac7214624a5412fda5d",
+  measurementId: "G-H4DW9K62VQ"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+const db = firebase.database();
+
+/* Error Messages */
+function showError(msg){
+
+    let box = document.getElementById("errorBox");
+
+    box.textContent = msg;
+    box.style.display = "block";
+
+    setTimeout(() => {
+        box.style.display = "none";
+    }, 3000);
+
+}
+
+function clearError(){
+    document.getElementById("errorBox").style.display = "none";
+}
+
+/* Username → Email */
+function makeEmail(username){
+
+    return username
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, ".")
+        + "@app.com";
+}
+
+/* Sign Up */
+function signup(){
+
+    clearError();
+
+    let username =
+        document.getElementById("username").value;
+
+    let password =
+        document.getElementById("password").value;
+
+    if(username.trim() === "" || password.trim() === ""){
+        showError("Please fill in all fields");
+        return;
+    }
+
+    if(password.length < 6){
+        showError("Password must be at least 6 characters");
+        return;
+    }
+
+    let email = makeEmail(username);
+
+    firebase.auth()
+    .createUserWithEmailAndPassword(email, password)
+    .then(userCred => {
+
+        let uid = userCred.user.uid;
+
+        /* Save username */
+        db.ref("users/" + uid).set({
+            username: username
+        });
+
+        /* Auto login */
+        window.location = "home.html";
+
+    })
+    .catch(err => {
+
+        let msg = "";
+
+        if(err.code === "auth/email-already-in-use"){
+            msg = "Username already taken";
+        }
+        else if(err.code === "auth/weak-password"){
+            msg = "Password must be at least 6 characters";
+        }
+        else if(err.code === "auth/invalid-email"){
+            msg = "Invalid username";
+        }
+        else{
+            msg = "Failed to create account";
+        }
+
+        showError(msg);
+
+    });
+
+}
+
+/* Enter Key Support */
+document.getElementById("password")
+.addEventListener("keydown", function(e){
+
+    if(e.key === "Enter"){
+        signup();
+    }
+
+});
+
+</script>
+
+</body>
+</html>

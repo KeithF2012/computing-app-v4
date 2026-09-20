@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Feedback Chat</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+</head>
+<body>
+
+<h1>Feedback Chat</h1>
+
+<div class="card">
+
+    <textarea
+        id="msg"
+        class="bigBox"
+        placeholder="Enter = send | Shift+Enter = new line"
+    ></textarea>
+
+    <br>
+
+    <button onclick="send()">Send</button>
+
+    <button
+        id="clearBtn"
+        onclick="clearChat()"
+        style="display:none;"
+    >
+        Clear Chat
+    </button>
+
+    <div id="chatBox"></div>
+
+</div>
+
+<a href="home.html">
+    <button>Back</button>
+</a>
+
+<script>
+
+/* Firebase Config */
+const firebaseConfig = {
+  apiKey: "AIzaSyC7DBA3XUEkFbbtxVrhg6yvD8IKjWqUzQc",
+  authDomain: "computing-feedback-chat.firebaseapp.com",
+  databaseURL: "https://computing-feedback-chat-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "computing-feedback-chat",
+  storageBucket: "computing-feedback-chat.firebasestorage.app",
+  messagingSenderId: "873968911336",
+  appId: "1:873968911336:web:489ac7214624a5412fda5d",
+  measurementId: "G-H4DW9K62VQ"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+const db = firebase.database();
+
+/* Admin UID */
+const ADMIN_UID = "9ZzmyMQFadYskR65tx6uOyNpwTD2";
+
+let currentUser = null;
+let username = "User";
+
+/* Login Protection */
+firebase.auth().onAuthStateChanged(user => {
+
+    if (!user) {
+        window.location = "index.html";
+        return;
+    }
+
+    currentUser = user;
+
+    if (user.uid === ADMIN_UID) {
+        document.getElementById("clearBtn").style.display = "inline-block";
+    }
+
+    db.ref("users/" + user.uid)
+    .once("value")
+    .then(snapshot => {
+
+        let data = snapshot.val();
+
+        if (data && data.username) {
+            username = data.username;
+        }
+        else {
+
+            username = user.email
+                .replace("@app.com", "")
+                .replace(/\./g, " ");
+        }
+
+        loadChat();
+
+    });
+
+});
+
+/* Send Message */
+function send(){
+
+    if (!currentUser) {
+        return;
+    }
+
+    let input = document.getElementById("msg");
+    let text = input.value.trim();
+
+    if (text === "") {
+        return;
+    }
+
+    db.ref("chat").push({
+
+        user: username,
+        text: text,
+        uid: currentUser.uid
+
+    });
+
+    input.value = "";
+
+}
+
+/* Enter To Send */
+document.getElementById("msg")
+.addEventListener("keydown", function(e){
+
+    if(e.key === "Enter" && !e.shiftKey){
+
+        e.preventDefault();
+
+        send();
+
+    }
+
+});
+
+/* Load Chat */
+function loadChat(){
+
+    db.ref("chat").on("value", snapshot => {
+
+        let box = document.getElementById("chatBox");
+
+        box.innerHTML = "";
+
+        let data = snapshot.val();
+
+        if(!data){
+
+            box.innerHTML =
+                "<p>No messages yet</p>";
+
+            return;
+        }
+
+        for(let key in data){
+
+            let item = data[key];
+
+            let div =
+                document.createElement("div");
+
+            if(
+                currentUser &&
+                item.uid === currentUser.uid
+            ){
+                div.className =
+                    "message my";
+            }
+            else{
+                div.className =
+                    "message other";
+            }
+
+            let content =
+                document.createElement("div");
+
+            content.innerHTML =
+                "<b>" +
+                item.user +
+                "</b><br>" +
+                item.text.replace(/\n/g,"<br>");
+
+            div.appendChild(content);
+
+            /* Delete Own Messages */
+            if(
+                currentUser &&
+                item.uid === currentUser.uid
+            ){
+
+                let delBtn =
+                    document.createElement("button");
+
+                delBtn.textContent =
+                    "Delete";
+
+                delBtn.onclick =
+                function(){
+
+                    if(
+                        confirm(
+                            "Delete message?"
+                        )
+                    ){
+
+                        db.ref(
+                            "chat/" + key
+                        ).remove();
+
+                    }
+
+                };
+
+                div.appendChild(delBtn);
+            }
+
+            box.appendChild(div);
+
+        }
+
+        box.scrollTop =
+            box.scrollHeight;
+
+    });
+
+}
+
+/* Admin Clear Chat */
+function clearChat(){
+
+    if(
+        !currentUser ||
+        currentUser.uid !== ADMIN_UID
+    ){
+        return;
+    }
+
+    let ok =
+        confirm(
+            "Are you sure you want to clear chat?"
+        );
+
+    if(ok){
+
+        db.ref("chat")
+        .remove()
+        .then(() => {
+
+            alert("Chat cleared ✅");
+
+        });
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>

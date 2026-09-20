@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Learning</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Learning Notes</h1>
+
+<div class="card">
+
+    <!-- Python -->
+    <button class="sectionBtn" onclick="toggleSection('pythonContent', this)">
+        <span class="arrow">▶</span> Python
+    </button>
+
+    <div id="pythonContent" class="sectionContent">
+
+        <ol>
+            <li><b>Variables</b> store data.</li>
+            <li><b>Data Types</b> include strings, integers and booleans.</li>
+            <li><b>Input</b> allows users to enter information.</li>
+            <li><b>Output</b> displays information.</li>
+            <li><b>Operators</b> perform calculations.</li>
+            <li><b>If Statements</b> make decisions.</li>
+            <li><b>Loops</b> repeat code.</li>
+            <li><b>Lists</b> store multiple values.</li>
+            <li><b>Functions</b> organise reusable code.</li>
+            <li><b>Debugging</b> fixes errors.</li>
+        </ol>
+
+    </div>
+
+    <hr>
+
+    <!-- HTML -->
+    <button class="sectionBtn" onclick="toggleSection('htmlContent', this)">
+        <span class="arrow">▶</span> HTML
+    </button>
+
+    <div id="htmlContent" class="sectionContent">
+
+        <ol>
+            <li><b>HTML Structure</b> starts with DOCTYPE and html tags.</li>
+            <li><b>Headings</b> use h1 to h6.</li>
+            <li><b>Paragraphs</b> use p tags.</li>
+            <li><b>Links</b> use a tags.</li>
+            <li><b>Images</b> use img tags.</li>
+            <li><b>Lists</b> organise information.</li>
+            <li><b>Tables</b> display tabular data.</li>
+            <li><b>Forms</b> collect user input.</li>
+            <li><b>Divs</b> group content.</li>
+            <li><b>CSS</b> styles webpages.</li>
+        </ol>
+
+    </div>
+
+</div>
+
+<a href="home.html">
+    <button>Back</button>
+</a>
+
+<script>
+
+function toggleSection(id, button){
+
+    const content =
+        document.getElementById(id);
+
+    const arrow =
+        button.querySelector(".arrow");
+
+    content.classList.toggle("open");
+
+    arrow.classList.toggle("rotate");
+
+}
+
+</script>
+
+</body>
+</html>
